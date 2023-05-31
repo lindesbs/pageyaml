@@ -1,0 +1,30 @@
+<div id="pageyaml" class="content">
+    <h2 class="sub_headline">Uebersicht</h2>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-3-sm">
+
+                <h3>Seitenbaum Konfiguration</h3>
+            </div>
+            <div class="col-9">
+                <form class="tl_form" method="post">
+                    <input type="hidden" name="REQUEST_TOKEN" value="{{ request_token }}">
+                    <input type="hidden" name="FORM_ID" value="PAGEYAML_UPLOAD">
+
+                    <label for="pageyaml_files">YAML Files</label>
+
+                    <select name="pageyaml_files" id="pageyaml_files">
+                        <option value="">-</option>
+                        {% for optionKey,optionValue in optionsArray %}
+                            <option value="{{ optionKey }}">{{ optionValue }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <button type="submit" class="button" name="importConfig" value="1">Konfiguration importieren</button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
