@@ -1,0 +1,25 @@
+{
+    "name": "lindesbs/pageyaml",
+    "description": "Seitenbaeume via YAML generieren",
+    "type": "contao-bundle",
+    "homepage": "https://chektrion.de",
+    "license": "LGPL-3.0-or-later",
+    "authors": [
+        {
+            "name": "Stefan Lindecke",
+            "email": "git@ktrion.de"
+        }
+    ],
+    "require": {
+        "contao/core-bundle": "^4.9"
+    },
+    "autoload": {
+        "psr-4": {
+            "lindesbs\\pageyaml\\": "src/"
+        }
+    },
+    "extra": {
+        "contao-manager-plugin": "lindesbs\\pageyaml\\ContaoManager\\Plugin"
+    }
+}
+
