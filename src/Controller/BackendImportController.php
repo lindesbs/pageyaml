@@ -48,6 +48,7 @@ class BackendImportController
 
             $fileData = Yaml::parse(file_get_contents($request->get('pageyaml_files')));
 
+            $this->walk($fileData);
 
             dd($fileData);
         }
@@ -83,4 +84,25 @@ class BackendImportController
 
         return $strReturn;
     }
+
+
+    protected function walk($array) {
+        foreach ($array as $arrayKey => $arrayValue) {
+            echo $arrayKey.' -> <br>';
+
+            if (is_array($arrayValue)) {
+                $this->walk($arrayValue);
+            } else {
+                if (str_starts_with($arrayKey, '~'))
+                {
+                    echo sprintf("Attribut %s %s<br>", $arrayKey, $arrayValue);
+                    continue;
+                }
+
+            }
+        }
+    }
+
+
+
 }
