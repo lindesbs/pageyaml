@@ -11,16 +11,13 @@
                 <form class="tl_form" method="post">
                     <input type="hidden" name="REQUEST_TOKEN" value="{{ request_token }}">
                     <input type="hidden" name="FORM_ID" value="PAGEYAML_UPLOAD">
-
                     <label for="pageyaml_files">YAML Files</label>
-
                     <select name="pageyaml_files" id="pageyaml_files">
                         <option value="">-</option>
                         {% for optionKey,optionValue in optionsArray %}
                             <option value="{{ optionKey }}">{{ optionValue }}</option>
                         {% endfor %}
                     </select>
-
                     <button type="submit" class="button" name="importConfig" value="1">Konfiguration importieren</button>
                 </form>
 

@@ -9,6 +9,7 @@ use Doctrine\DBAL\Connection;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Yaml\Yaml;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class BackendImportController
@@ -44,7 +45,11 @@ class BackendImportController
         if (($request->getMethod() === 'POST') &&
             ($request->get('FORM_ID') === 'PAGEYAML_UPLOAD')) {
 
-            dd($request);
+
+            $fileData = Yaml::parse(file_get_contents($request->get('pageyaml_files')));
+
+
+            dd($fileData);
         }
 
         $strUploadPath = System::getContainer()->getParameter('contao.upload_path');
@@ -56,7 +61,6 @@ class BackendImportController
             ->files()
             ->name("*.yaml")
             ->sortByName(true);
-
 
         $strFileSelections = [];
 
