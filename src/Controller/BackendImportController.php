@@ -2,6 +2,7 @@
 
 namespace lindesbs\pageyaml\Controller;
 
+use Contao\Controller;
 use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\Input;
 use Contao\PageModel;
@@ -39,7 +40,10 @@ class BackendImportController
         $this->framework->initialize();
         $request = $this->requestStack->getCurrentRequest();
 
-        $this->handlePOSTData($request);
+        if ($this->handlePOSTData($request))
+        {
+            Controller::redirect('contao?do=page');
+        }
 
         $strFileSelections = $this->getYamlFiles();
 
@@ -89,6 +93,13 @@ class BackendImportController
         }
         $objPage->published = true;
 
+
+        if (is_int($pageKey))
+        {
+            $objPage->type = 'error_'.$pageKey;
+        }
+
+
         $nodes = [];
 
 
@@ -98,10 +109,17 @@ class BackendImportController
                 if (str_starts_with($arrayKey, '~')) {
                     $key = ltrim($arrayKey, '~');
                     $objPage->$key = $arrayValue;
+
+                    continue;
                 }
-                else {
-                    $nodes[$arrayKey] = $arrayValue;
+
+                if (str_starts_with($arrayKey,'_'))
+                {
+                    $objPage->visible = true;
+                    $objPage->hide = true;
                 }
+
+                $nodes[$arrayKey] = $arrayValue;
             }
         }
 
@@ -154,9 +172,11 @@ class BackendImportController
 
             $this->walk(key($fileData), array_pop(array_values($fileData)));
 
+            return true;
+
         }
 
-        return true;
+        return false;
     }
 
 
