@@ -10,6 +10,7 @@ use Contao\StringUtil;
 use Contao\System;
 use Doctrine\DBAL\Connection;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Yaml\Yaml;
@@ -62,7 +63,7 @@ class BackendImportController
     }
 
 
-    protected function walk($pageKey, $pageData, $pid = 0)
+    protected function walk($pageKey, $pageData, $pid = 0): void
     {
         $alias = null;
 
@@ -93,15 +94,13 @@ class BackendImportController
         }
         $objPage->published = true;
 
-
+        // Ist die Bezeichnung numerisch, wird dies als Errorpage gewertet
         if (is_int($pageKey))
         {
             $objPage->type = 'error_'.$pageKey;
         }
 
-
         $nodes = [];
-
 
         if (is_array($pageData)) {
             foreach ($pageData as $arrayKey => $arrayValue) {
@@ -156,10 +155,10 @@ class BackendImportController
     }
 
     /**
-     * @param \Symfony\Component\HttpFoundation\Request|null $request
-     * @return void
+     * @param Request|null $request
+     * @return bool
      */
-    public function handlePOSTData(?\Symfony\Component\HttpFoundation\Request $request): bool
+    public function handlePOSTData(?Request $request): bool
     {
         if (($request->getMethod() === 'POST') &&
             ($request->get('FORM_ID') === 'PAGEYAML_UPLOAD')) {
@@ -173,7 +172,6 @@ class BackendImportController
             $this->walk(key($fileData), array_pop(array_values($fileData)));
 
             return true;
-
         }
 
         return false;
