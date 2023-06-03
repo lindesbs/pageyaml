@@ -1,0 +1,13 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: true
+
+  lindesbs\pageyaml\:
+    resource: ../../*
+    exclude: ../../{Entity,Entity,Migrations,Resources,Tests}
+
+  lindesbs\pageyaml\Controller\:
+    resource: '../../Controller'
+    tags: ['controller.service_arguments']
