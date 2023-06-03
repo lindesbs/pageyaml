@@ -4,6 +4,8 @@ namespace lindesbs\pageyaml\Controller;
 
 use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\Input;
+use Contao\PageModel;
+use Contao\StringUtil;
 use Contao\System;
 use Doctrine\DBAL\Connection;
 use Symfony\Component\Finder\Finder;
@@ -16,16 +18,11 @@ class BackendImportController
 {
 
     public function __construct(
-        private ContaoFramework     $framework,
-        private Connection          $connection,
-        private RequestStack        $requestStack,
-        private TranslatorInterface $translator)
+        private readonly ContaoFramework     $framework,
+        private readonly Connection          $connection,
+        private readonly RequestStack        $requestStack,
+        private readonly TranslatorInterface $translator)
     {
-        $this->framework = $framework;
-        $this->connection = $connection;
-        $this->requestStack = $requestStack;
-        $this->translator = $translator;
-
         $GLOBALS['TL_CSS'][] = 'bundles/pageyaml/pageyaml.css|static';
     }
 
@@ -42,17 +39,84 @@ class BackendImportController
         $this->framework->initialize();
         $request = $this->requestStack->getCurrentRequest();
 
-        if (($request->getMethod() === 'POST') &&
-            ($request->get('FORM_ID') === 'PAGEYAML_UPLOAD')) {
+        $this->handlePOSTData($request);
 
+        $strFileSelections = $this->getYamlFiles();
 
-            $fileData = Yaml::parse(file_get_contents($request->get('pageyaml_files')));
+        $twig = $container->get('twig');
+        $strReturn = '';
 
-            $this->walk($fileData);
-
-            dd($fileData);
+        if ($twig) {
+            $strReturn = $twig->render('@PageYaml\Backend\settings.html.twig',
+                [
+                    'request_token' => REQUEST_TOKEN,
+                    'optionsArray' => $strFileSelections
+                ]);
         }
 
+        return $strReturn;
+    }
+
+
+    protected function walk($pageKey, $pageData, $pid = 0)
+    {
+        $alias = null;
+
+        if (str_contains($pageKey, "~~")) {
+            list($title, $alias) = explode("~~", $pageKey);
+        } else {
+            $title = $pageKey;
+        }
+
+        if (!$alias)
+            $alias = StringUtil::generateAlias($title);
+
+        $objPage = PageModel::findByAlias($alias);
+
+        if (!$objPage) {
+            $objPage = new PageModel();
+            $objPage->tstamp = time();
+            $objPage->alias = $alias;
+        }
+
+        $objPage->title = $title;
+        $objPage->pid = $pid;
+
+        if ($pid == 0) {
+            $objPage->type = "root";
+        } else {
+            $objPage->type = 'regular';
+        }
+        $objPage->published = true;
+
+        $nodes = [];
+
+
+        if (is_array($pageData)) {
+            foreach ($pageData as $arrayKey => $arrayValue) {
+
+                if (str_starts_with($arrayKey, '~')) {
+                    $key = ltrim($arrayKey, '~');
+                    $objPage->$key = $arrayValue;
+                }
+                else {
+                    $nodes[$arrayKey] = $arrayValue;
+                }
+            }
+        }
+
+        $objPage->save();
+
+        foreach ($nodes as $nodeKey => $nodeValue) {
+            $this->walk($nodeKey, $nodeValue, $objPage->id);
+        }
+    }
+
+    /**
+     * @return array
+     */
+    public function getYamlFiles(): array
+    {
         $strUploadPath = System::getContainer()->getParameter('contao.upload_path');
         $projectDir = System::getContainer()->getParameter('kernel.project_dir');
 
@@ -70,39 +134,30 @@ class BackendImportController
             $fileNameWithExtension = $file->getRelativePathname();
             $strFileSelections[$absoluteFilePath] = $fileNameWithExtension;
         }
-
-        $twig = $container->get('twig');
-        $strReturn = '';
-
-        if ($twig) {
-            $strReturn = $twig->render('@PageYaml\Backend\settings.html.twig',
-                [
-                    'request_token' => REQUEST_TOKEN,
-                    'optionsArray' => $strFileSelections
-                ]);
-        }
-
-        return $strReturn;
+        return $strFileSelections;
     }
 
+    /**
+     * @param \Symfony\Component\HttpFoundation\Request|null $request
+     * @return void
+     */
+    public function handlePOSTData(?\Symfony\Component\HttpFoundation\Request $request): bool
+    {
+        if (($request->getMethod() === 'POST') &&
+            ($request->get('FORM_ID') === 'PAGEYAML_UPLOAD')) {
 
-    protected function walk($array) {
-        foreach ($array as $arrayKey => $arrayValue) {
-            echo $arrayKey.' -> <br>';
-
-            if (is_array($arrayValue)) {
-                $this->walk($arrayValue);
-            } else {
-                if (str_starts_with($arrayKey, '~'))
-                {
-                    echo sprintf("Attribut %s %s<br>", $arrayKey, $arrayValue);
-                    continue;
-                }
-
+            try {
+                $fileData = Yaml::parseFile($request->get('pageyaml_files'));
+            } catch (\Exception $ex) {
+                return false;
             }
-        }
-    }
 
+            $this->walk(key($fileData), array_pop(array_values($fileData)));
+
+        }
+
+        return true;
+    }
 
 
 }

@@ -23,10 +23,12 @@ class BackendDCAClasses extends Backend
     {
         return '
 <div class="pageyaml_dropdown">
-  <button class="pageyaml_dropbtn">PageYAML</button>
+
+  <button class="pageyaml_dropbtn"><span class="icon"></span>PageYAML</button>
+  
   <div class="pageyaml_dropdown-content">
+  
     <a href="contao?do=page&'.$href.'&import">Import</a>
-    <a href="#">Export</a>
   </div>
 </div> 
 ';

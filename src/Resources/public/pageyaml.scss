@@ -1,11 +1,17 @@
-
 .pageyaml_dropbtn {
-  background-color: #04AA6D;
-  color: white;
+  background-color: white;
   padding: 8px;
   border: none;
 
-  padding-left: 24px;
+  padding-left: 8px;
+
+  span.icon {
+    background: url(icons/sync.svg) no-repeat;
+    float: left;
+    width: 24px;
+    height: 16px;
+  }
+
 }
 
 .pageyaml_dropdown {
@@ -33,4 +39,4 @@
 }
 
 .pageyaml_dropdown:hover .pageyaml_dropdown-content {display: block;}
-.pageyaml_dropdown:hover .pageyaml_dropbtn {background-color: #3e8e41;}
+.pageyaml_dropdown:hover .pageyaml_dropbtn {background-color: lightgrey;}
