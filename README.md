@@ -1,35 +1,33 @@
 # pageYaml
 
-Seitenbaeume via `yaml` Datei erzeugen.
-Wahlweise mit erstem Artikel und erstem ContentElement.
+
+Creating page trees via yaml file.
+Optionally with the first article and the first content element.
 
 ```yaml
-# mit der doppelten Tilde kann die Bezeichnung von einem fixen Alias getrennt werden.
-# ansonsten wird der Alias ueber die Bezeichnung gebildet.
-Die Startseite~~startseite:
-  # Mit einer Tilde vorweg koennen die einzelnen Attribute einer Seite angesprochen werden
-  ~description: Die einfache Uebersichtseite
-  ~language: de
+# Using the double tilde, the label can be separated from a fixed alias.
+# Otherwise, the alias is formed from the label.
+Homepage~~homepage:
+  # By prefixing with a tilde, the individual attributes of a page can be addressed.
+  ~description: The simple overview page
+  ~language: en
   ~fallback: true
   ~includeLayout: true
-  ~layout: Standard
-  Uebersicht:
-  Vorstellung:
+  ~layout: Default
+  Overview:
+  Introdution:
   Links:
-    Details:
+    Detail:
       ~visible: false
       ~hide: true
-  Impressum:
-  Datenschutz:
-  # numerische Seiten werden als Fehlerseiten geparst
+  Legal notice:
+  Privacy Policy:
+  # Numerical pages are parsed as error pages
   404:
   403:
   _HIDDEN:
     _Header:
     _Footer:
-
-
-
 ```
 
-Aliase werden automatisch generiert. Beginnt das erste Wort mit einem "_" (Unterstrich) wird die Seite _versteckt_.
+Aliases are generated automatically. If the first word starts with an underscore ("_"), the page is hidden.
