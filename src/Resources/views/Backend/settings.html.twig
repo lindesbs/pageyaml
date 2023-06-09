@@ -18,7 +18,16 @@
                             <option value="{{ optionKey }}">{{ optionValue }}</option>
                         {% endfor %}
                     </select>
+                    <br>
+                    <label for="additionaljobs">Weitere Aufgaben:</label>
+                    <select name="additionaljobs" id="additionaljobs">
+                        <option value="-">nichts</option>
+                        <option value="articles">Artikel hinzufuegen</option>
+                        <option value="articlescontent">Artikel & ContentElement hinzufuegen</option>
+                    </select>
+
                     <button type="submit" class="button" name="importConfig" value="1">Konfiguration importieren</button>
+
                 </form>
 
             </div>
