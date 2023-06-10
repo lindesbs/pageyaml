@@ -66,7 +66,7 @@ class BackendImportController
     }
 
 
-    protected function walk($pageKey, $pageData, $pid = 0): void
+    protected function walk($pageKey, $pageData, Request $request, $pid = 0): void
     {
         $alias = null;
 
@@ -80,7 +80,6 @@ class BackendImportController
             $title,
             pid: $pid
         );
-
 
         if ($pid == 0) {
             $objPage->type = "root";
@@ -104,8 +103,6 @@ class BackendImportController
                     continue;
                 }
 
-
-
                 $nodes[$arrayKey] = $arrayValue;
             }
         }
@@ -117,8 +114,14 @@ class BackendImportController
 
         $objPage->save();
 
+        $jobs = $request->get('additionaljobs');
+
+        if (str_contains($jobs, 'on')) {
+            $objArticle = $this->DCAManage->addArticle($objPage);
+        }
+
         foreach ($nodes as $nodeKey => $nodeValue) {
-            $this->walk($nodeKey, $nodeValue, $objPage->id);
+            $this->walk($nodeKey, $nodeValue, $request, $objPage->id);
         }
     }
 
@@ -162,7 +165,8 @@ class BackendImportController
                 return false;
             }
 
-            $this->walk(key($fileData), array_pop(array_values($fileData)));
+            $array = array_values($fileData);
+            $this->walk(key($fileData), array_pop($array), $request);
 
             return true;
         }

@@ -2,12 +2,13 @@
 
 namespace lindesbs\pageyaml\Service;
 
+use Contao\ArticleModel;
+use Contao\ContentModel;
 use Contao\PageModel;
 use Contao\StringUtil;
 
 class DCAManage
 {
-
     public function addPage(
         string $title,
         string $alias = null,
@@ -41,4 +42,26 @@ class DCAManage
 
         return $objPage;
     }
+
+
+    public function addArticle(PageModel $pageModel): ArticleModel
+    {
+
+        $objArticle = ArticleModel::findOneByAlias($pageModel->alias);
+
+        if (!$objArticle) {
+            $objArticle = new ArticleModel();
+            $objArticle->tstamp = time();
+            $objArticle->title = $pageModel->title;
+            $objArticle->alias = $pageModel->alias;
+
+            $objArticle->published = true;
+
+        }
+
+        $objArticle->pid = $pageModel->id;
+        $objArticle->save();
+        return $objArticle;
+    }
+
 }
