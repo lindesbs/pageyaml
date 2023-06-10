@@ -3,6 +3,8 @@
 namespace lindesbs\pageyaml\Classes;
 
 use Contao\Backend;
+use Contao\System;
+use Symfony\Bundle\TwigBundle\DependencyInjection\TwigExtension;
 
 class BackendDCAClasses extends Backend
 {
@@ -21,17 +23,16 @@ class BackendDCAClasses extends Backend
         array|string $ids
     ): string
     {
-        return '
-<div class="pageyaml_dropdown">
 
-  <button class="pageyaml_dropbtn"><span class="icon"></span>PageYAML</button>
-  
-  <div class="pageyaml_dropdown-content">
-  
-    <a href="contao?do=page&'.$href.'&import">Import</a>
-  </div>
-</div> 
-';
+
+        $container = System::getContainer();
+        $twig = $container->get('twig');
+
+        return $twig->render('@PageYaml\Backend\GlobalOperationsLink.html.twig',
+            [
+                'href' => $href
+            ]
+        );
     }
 
 }

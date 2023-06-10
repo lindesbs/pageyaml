@@ -1,7 +1,7 @@
-<div id="pageyaml" class="content">
+<div id="pageyaml" class="container">
     <h2 class="sub_headline">Uebersicht</h2>
 
-    <div class="container">
+    <div class="tl_box">
         <div class="row">
             <div class="col-3-sm">
 
@@ -9,16 +9,37 @@
             </div>
             <div class="col-9">
                 <form class="tl_form" method="post">
+
                     <input type="hidden" name="REQUEST_TOKEN" value="{{ request_token }}">
                     <input type="hidden" name="FORM_ID" value="PAGEYAML_UPLOAD">
-                    <label for="pageyaml_files">YAML Files</label>
-                    <select name="pageyaml_files" id="pageyaml_files">
-                        <option value="">-</option>
-                        {% for optionKey,optionValue in optionsArray %}
-                            <option value="{{ optionKey }}">{{ optionValue }}</option>
-                        {% endfor %}
-                    </select>
-                    <button type="submit" class="button" name="importConfig" value="1">Konfiguration importieren</button>
+
+                    <table>
+                        <tr>
+                            <td>
+
+                                <label for="pageyaml_files">YAML Files</label>
+                            </td>
+                            <td>
+                                <select name="pageyaml_files" id="pageyaml_files">
+                                    <option value="">-</option>
+                                    {% for optionKey,optionValue in optionsArray %}
+                                        <option value="{{ optionKey }}">{{ optionValue }}</option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label for="additionaljobs">Weitere Aufgaben:</label>
+                            </td>
+                            <td>
+                                <input type="checkbox" id="additionaljobs" name="additionaljobs">Artikel hinzufuegen</input>
+                            </td>
+                        </tr>
+                    </table>
+                    <button type="submit" class="button" name="importConfig" value="1">Konfiguration importieren
+                    </button>
+
                 </form>
 
             </div>

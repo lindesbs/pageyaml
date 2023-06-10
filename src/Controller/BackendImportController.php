@@ -9,6 +9,7 @@ use Contao\PageModel;
 use Contao\StringUtil;
 use Contao\System;
 use Doctrine\DBAL\Connection;
+use lindesbs\pageyaml\Service\DCAManage;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -23,7 +24,9 @@ class BackendImportController
         private readonly ContaoFramework     $framework,
         private readonly Connection          $connection,
         private readonly RequestStack        $requestStack,
-        private readonly TranslatorInterface $translator)
+        private readonly TranslatorInterface $translator,
+        private readonly DCAManage $DCAManage
+    )
     {
         $GLOBALS['TL_CSS'][] = 'bundles/pageyaml/pageyaml.css|static';
     }
@@ -63,7 +66,7 @@ class BackendImportController
     }
 
 
-    protected function walk($pageKey, $pageData, $pid = 0): void
+    protected function walk($pageKey, $pageData, Request $request, $pid = 0): void
     {
         $alias = null;
 
@@ -73,31 +76,19 @@ class BackendImportController
             $title = $pageKey;
         }
 
-        if (!$alias)
-            $alias = StringUtil::generateAlias($title);
-
-        $objPage = PageModel::findByAlias($alias);
-
-        if (!$objPage) {
-            $objPage = new PageModel();
-            $objPage->tstamp = time();
-            $objPage->alias = $alias;
-        }
-
-        $objPage->title = $title;
-        $objPage->pid = $pid;
+        $objPage = $this->DCAManage->addPage(
+            $title,
+            pid: $pid
+        );
 
         if ($pid == 0) {
             $objPage->type = "root";
-        } else {
-            $objPage->type = 'regular';
         }
-        $objPage->published = true;
 
         // Ist die Bezeichnung numerisch, wird dies als Errorpage gewertet
         if (is_int($pageKey))
         {
-            $objPage->type = 'error_'.$pageKey;
+            $objPage->type  = 'error_'.$pageKey;
         }
 
         $nodes = [];
@@ -112,20 +103,25 @@ class BackendImportController
                     continue;
                 }
 
-                if (str_starts_with($arrayKey,'_'))
-                {
-                    $objPage->visible = true;
-                    $objPage->hide = true;
-                }
-
                 $nodes[$arrayKey] = $arrayValue;
             }
         }
 
+        if (str_starts_with($pageKey,'_'))
+        {
+            $objPage->hide = true;
+        }
+
         $objPage->save();
 
+        $jobs = $request->get('additionaljobs');
+
+        if (str_contains($jobs, 'on')) {
+            $objArticle = $this->DCAManage->addArticle($objPage);
+        }
+
         foreach ($nodes as $nodeKey => $nodeValue) {
-            $this->walk($nodeKey, $nodeValue, $objPage->id);
+            $this->walk($nodeKey, $nodeValue, $request, $objPage->id);
         }
     }
 
@@ -169,7 +165,8 @@ class BackendImportController
                 return false;
             }
 
-            $this->walk(key($fileData), array_pop(array_values($fileData)));
+            $array = array_values($fileData);
+            $this->walk(key($fileData), array_pop($array), $request);
 
             return true;
         }
