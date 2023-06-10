@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.1">
+    <file>
+        <body>
+            <trans-unit id="pageyaml.settings.title">
+                <target>pageYaml - Overview</target>
+            </trans-unit>
+            <trans-unit id="pageyaml.settings.importfile">
+                <target>Configuration file</target>
+            </trans-unit>
+            <trans-unit id="pageyaml.settings.importfile_description">
+                <target>File must be stored in /files directory. Just upload it via file manager. Extension must be <b>yaml</b></target>
+            </trans-unit>
+            <trans-unit id="pageyaml.settings.importtitle">
+                <target>Import settings</target>
+            </trans-unit>
+            <trans-unit id="pageyaml.settings.addArticle">
+                <target></target>
+            </trans-unit>
+            <trans-unit id="pageyaml.settings.addArticleCheckbox">
+                <target>add article to every page</target>
+            </trans-unit>
+            <trans-unit id="pageyaml.settings.importConfiguration">
+                <target>Import settings from file</target>
+            </trans-unit>
+
+            <trans-unit id="pageyaml.global.name">
+                <target>pageYAML</target>
+            </trans-unit>
+
+            <trans-unit id="pageyaml.global.import">
+                <target>
+                    Import
+                </target>
+            </trans-unit>
+
+        </body>
+    </file>
+</xliff>

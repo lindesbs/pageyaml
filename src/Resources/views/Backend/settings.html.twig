@@ -1,11 +1,11 @@
 <div id="pageyaml" class="container">
-    <h2 class="sub_headline">Uebersicht</h2>
+    <h2 class="sub_headline">{{ 'pageyaml.settings.title'|trans({}, 'contao_default') }}</h2>
 
     <div class="tl_box">
         <div class="row">
             <div class="col-3-sm">
 
-                <h3>Seitenbaum Konfiguration</h3>
+                <h3>{{ 'pageyaml.settings.importtitle'|trans({}, 'contao_default') }}</h3>
             </div>
             <div class="col-9">
                 <form class="tl_form" method="post">
@@ -16,8 +16,7 @@
                     <table>
                         <tr>
                             <td>
-
-                                <label for="pageyaml_files">YAML Files</label>
+                                <label for="pageyaml_files">{{ 'pageyaml.settings.importfile'|trans({}, 'contao_default') }}</label>
                             </td>
                             <td>
                                 <select name="pageyaml_files" id="pageyaml_files">
@@ -30,16 +29,28 @@
                         </tr>
                         <tr>
                             <td>
-                                <label for="additionaljobs">Weitere Aufgaben:</label>
+                             </td>
+                            <td>
+                                <small>{{ 'pageyaml.settings.importfile_description'|trans({}, 'contao_default') }}</small>
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label for="additionaljobs">{{ 'pageyaml.settings.addArticle'|trans({}, 'contao_default') }}</label>
                             </td>
                             <td>
-                                <input type="checkbox" id="additionaljobs" name="additionaljobs">Artikel hinzufuegen</input>
+                                <input type="checkbox" id="additionaljobs" name="additionaljobs">{{ 'pageyaml.settings.addArticleCheckbox'|trans({}, 'contao_default') }}</input>
                             </td>
                         </tr>
                     </table>
-                    <button type="submit" class="button" name="importConfig" value="1">Konfiguration importieren
+                    <div class="tl_formbody_submit">
+                        <div class="tl_submit_container">
+                    <button type="submit" class="tl_submit" name="importConfig" value="1">
+                        {{ 'pageyaml.settings.importConfiguration'|trans({}, 'contao_default') }}
                     </button>
-
+                    </div>
+                    </div>
                 </form>
 
             </div>
