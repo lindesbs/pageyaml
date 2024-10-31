@@ -21,14 +21,14 @@ class BackendDCAClasses extends Backend
         ?string $class,
         ?string $attr,
         array|string $ids
-    ): string
-    {
+    ): string {
 
 
         $container = System::getContainer();
         $twig = $container->get('twig');
 
-        return $twig->render('@PageYaml\Backend\GlobalOperationsLink.html.twig',
+        return $twig->render(
+            '@PageYaml\Backend\GlobalOperationsLink.html.twig',
             [
                 'href' => $href
             ]

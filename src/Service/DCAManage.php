@@ -16,11 +16,8 @@ class DCAManage
         bool $published = true,
         string $type = 'regular',
         bool $hide = false
-
-    ): PageModel
-    {
-        if (!$alias)
-        {
+    ): PageModel {
+        if (!$alias) {
             $alias= StringUtil::generateAlias($title);
         }
 

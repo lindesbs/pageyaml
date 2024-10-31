@@ -26,8 +26,7 @@ class BackendImportController
         private readonly RequestStack        $requestStack,
         private readonly TranslatorInterface $translator,
         private readonly DCAManage $DCAManage
-    )
-    {
+    ) {
         $GLOBALS['TL_CSS'][] = 'bundles/pageyaml/pageyaml.css|static';
     }
 
@@ -44,8 +43,7 @@ class BackendImportController
         $this->framework->initialize();
         $request = $this->requestStack->getCurrentRequest();
 
-        if ($this->handlePOSTData($request))
-        {
+        if ($this->handlePOSTData($request)) {
             Controller::redirect('contao?do=page');
         }
 
@@ -55,11 +53,13 @@ class BackendImportController
         $strReturn = '';
 
         if ($twig) {
-            $strReturn = $twig->render('@PageYaml\Backend\settings.html.twig',
+            $strReturn = $twig->render(
+                '@PageYaml\Backend\settings.html.twig',
                 [
                     'request_token' => REQUEST_TOKEN,
                     'optionsArray' => $strFileSelections
-                ]);
+                ]
+            );
         }
 
         return $strReturn;
@@ -86,8 +86,7 @@ class BackendImportController
         }
 
         // Ist die Bezeichnung numerisch, wird dies als Errorpage gewertet
-        if (is_int($pageKey))
-        {
+        if (is_int($pageKey)) {
             $objPage->type  = 'error_'.$pageKey;
         }
 
@@ -107,8 +106,7 @@ class BackendImportController
             }
         }
 
-        if (str_starts_with($pageKey,'_'))
-        {
+        if (str_starts_with($pageKey, '_')) {
             $objPage->hide = true;
         }
 
@@ -151,13 +149,14 @@ class BackendImportController
     }
 
     /**
-     * @param Request|null $request
+     * @param  Request|null $request
      * @return bool
      */
     public function handlePOSTData(?Request $request): bool
     {
-        if (($request->getMethod() === 'POST') &&
-            ($request->get('FORM_ID') === 'PAGEYAML_UPLOAD')) {
+        if (($request->getMethod() === 'POST') 
+            && ($request->get('FORM_ID') === 'PAGEYAML_UPLOAD')
+        ) {
 
             try {
                 $fileData = Yaml::parseFile($request->get('pageyaml_files'));
