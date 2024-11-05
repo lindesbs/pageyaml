@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace lindesbs\pageyaml\Classes;
 
 use Contao\Backend;
 use Contao\System;
-use Symfony\Bundle\TwigBundle\DependencyInjection\TwigExtension;
 
 class BackendDCAClasses extends Backend
 {

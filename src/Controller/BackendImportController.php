@@ -1,12 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace lindesbs\pageyaml\Controller;
 
 use Contao\Controller;
 use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\Input;
-use Contao\PageModel;
-use Contao\StringUtil;
 use Contao\System;
 use Doctrine\DBAL\Connection;
 use lindesbs\pageyaml\Service\DCAManage;
@@ -21,7 +21,7 @@ class BackendImportController
 {
 
     public function __construct(
-        private readonly ContaoFramework     $framework,
+        private readonly ContaoFramework     $contaoFramework,
         private readonly Connection          $connection,
         private readonly RequestStack        $requestStack,
         private readonly TranslatorInterface $translator,
@@ -40,7 +40,7 @@ class BackendImportController
         }
 
         $container = System::getContainer();
-        $this->framework->initialize();
+        $this->contaoFramework->initialize();
         $request = $this->requestStack->getCurrentRequest();
 
         if ($this->handlePOSTData($request)) {
@@ -76,18 +76,18 @@ class BackendImportController
             $title = $pageKey;
         }
 
-        $objPage = $this->DCAManage->addPage(
+        $pageModel = $this->DCAManage->addPage(
             $title,
             pid: $pid
         );
 
         if ($pid == 0) {
-            $objPage->type = "root";
+            $pageModel->type = "root";
         }
 
         // Ist die Bezeichnung numerisch, wird dies als Errorpage gewertet
         if (is_int($pageKey)) {
-            $objPage->type  = 'error_'.$pageKey;
+            $pageModel->type  = 'error_'.$pageKey;
         }
 
         $nodes = [];
@@ -97,7 +97,7 @@ class BackendImportController
 
                 if (str_starts_with($arrayKey, '~')) {
                     $key = ltrim($arrayKey, '~');
-                    $objPage->$key = $arrayValue;
+                    $pageModel->$key = $arrayValue;
 
                     continue;
                 }
@@ -107,19 +107,19 @@ class BackendImportController
         }
 
         if (str_starts_with($pageKey, '_')) {
-            $objPage->hide = true;
+            $pageModel->hide = true;
         }
 
-        $objPage->save();
+        $pageModel->save();
 
         $jobs = $request->get('additionaljobs');
 
         if (str_contains($jobs, 'on')) {
-            $objArticle = $this->DCAManage->addArticle($objPage);
+            $objArticle = $this->DCAManage->addArticle($pageModel);
         }
 
         foreach ($nodes as $nodeKey => $nodeValue) {
-            $this->walk($nodeKey, $nodeValue, $request, $objPage->id);
+            $this->walk($nodeKey, $nodeValue, $request, $pageModel->id);
         }
     }
 

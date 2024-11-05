@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace lindesbs\pageyaml\ContaoManager;
 
 use Contao\CoreBundle\ContaoCoreBundle;

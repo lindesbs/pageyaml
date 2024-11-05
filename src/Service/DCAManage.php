@@ -3,7 +3,6 @@
 namespace lindesbs\pageyaml\Service;
 
 use Contao\ArticleModel;
-use Contao\ContentModel;
 use Contao\PageModel;
 use Contao\StringUtil;
 

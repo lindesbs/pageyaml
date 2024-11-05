@@ -16,9 +16,9 @@ class PageYamlExtension extends Extension
      *
      * @throws \Exception
      */
-    public function load(array $configs, ContainerBuilder $container): void
+    public function load(array $configs, ContainerBuilder $containerBuilder): void
     {
-        $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
-        $loader->load('services.yml');
+        $yamlFileLoader = new YamlFileLoader($containerBuilder, new FileLocator(__DIR__.'/../Resources/config'));
+        $yamlFileLoader->load('services.yml');
     }
 }
