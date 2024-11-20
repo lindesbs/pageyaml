@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace lindesbs\pageyaml\Tests\Controller;
 
 use Contao\CoreBundle\Csrf\ContaoCsrfTokenManager;
@@ -10,7 +12,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-class BackendImportControllerTest extends TestCase
+final class BackendImportControllerTest extends TestCase
 {
     private $backendImportController;
     private $contaoFramework;
