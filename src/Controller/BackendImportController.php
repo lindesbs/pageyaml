@@ -5,27 +5,25 @@ declare(strict_types=1);
 namespace lindesbs\pageyaml\Controller;
 
 use Contao\Controller;
+use Contao\CoreBundle\Csrf\ContaoCsrfTokenManager;
 use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\Input;
 use Contao\System;
-use Doctrine\DBAL\Connection;
-use lindesbs\pageyaml\Service\DCAManage;
+use lindesbs\pageyaml\Classes\DCAManage;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Yaml\Yaml;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 class BackendImportController
 {
 
     public function __construct(
         private readonly ContaoFramework     $contaoFramework,
-        private readonly Connection          $connection,
+        private readonly ContaoCsrfTokenManager $contaoCsrfTokenManager,
         private readonly RequestStack        $requestStack,
-        private readonly TranslatorInterface $translator,
-        private readonly DCAManage $DCAManage
+        private readonly DCAManage           $DCAManage,
     ) {
         $GLOBALS['TL_CSS'][] = 'bundles/pageyaml/pageyaml.css|static';
     }
@@ -56,7 +54,7 @@ class BackendImportController
             $strReturn = $twig->render(
                 '@PageYaml\Backend\settings.html.twig',
                 [
-                    'request_token' => REQUEST_TOKEN,
+                    'request_token' => $this->contaoCsrfTokenManager->getDefaultTokenValue(),
                     'optionsArray' => $strFileSelections
                 ]
             );
@@ -70,14 +68,14 @@ class BackendImportController
     {
         $alias = null;
 
-        if (str_contains($pageKey, "~~")) {
+        if (str_contains(strval($pageKey), "~~")) {
             list($title, $alias) = explode("~~", $pageKey);
         } else {
             $title = $pageKey;
         }
 
         $pageModel = $this->DCAManage->addPage(
-            $title,
+            strval($title),
             pid: $pid
         );
 
@@ -95,7 +93,7 @@ class BackendImportController
         if (is_array($pageData)) {
             foreach ($pageData as $arrayKey => $arrayValue) {
 
-                if (str_starts_with($arrayKey, '~')) {
+                if (str_starts_with(strval($arrayKey), '~')) {
                     $key = ltrim($arrayKey, '~');
                     $pageModel->$key = $arrayValue;
 
@@ -106,7 +104,7 @@ class BackendImportController
             }
         }
 
-        if (str_starts_with($pageKey, '_')) {
+        if (str_starts_with(strval($pageKey), '_')) {
             $pageModel->hide = true;
         }
 
@@ -114,8 +112,8 @@ class BackendImportController
 
         $jobs = $request->get('additionaljobs');
 
-        if (str_contains($jobs, 'on')) {
-            $objArticle = $this->DCAManage->addArticle($pageModel);
+        if (($jobs) && (str_contains(strval($jobs), 'on'))) {
+            $this->DCAManage->addArticle($pageModel);
         }
 
         foreach ($nodes as $nodeKey => $nodeValue) {

@@ -1,13 +1,20 @@
-<?php declare(strict_types=1);
+<?php
 
-namespace lindesbs\pageyaml\Service;
+declare(strict_types=1);
 
-use Contao\ArticleModel;
+namespace lindesbs\pageyaml\Classes;
+
+
 use Contao\PageModel;
+use Contao\ArticleModel;
 use Contao\StringUtil;
-
 class DCAManage
 {
+
+    public function __construct()
+    {
+    }
+
     public function addPage(
         string $title,
         string $alias = null,
@@ -19,13 +26,15 @@ class DCAManage
         if (!$alias) {
             $alias= StringUtil::generateAlias($title);
         }
-
         $objPage = PageModel::findOneByAlias($alias);
 
         if (!$objPage) {
             $objPage = new PageModel();
             $objPage->tstamp = time();
             $objPage->alias = $alias;
+            if (!$objPage instanceof PageModel) {
+                throw new \RuntimeException('PageModel creation failed');
+            }
         }
 
         $objPage->title = $title;
@@ -35,7 +44,7 @@ class DCAManage
         $objPage->type = $type;
 
         $objPage->hide = $hide;
-
+        $objPage->save();
         return $objPage;
     }
 
@@ -59,5 +68,4 @@ class DCAManage
         $objArticle->save();
         return $objArticle;
     }
-
 }

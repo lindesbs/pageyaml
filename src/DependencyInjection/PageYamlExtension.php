@@ -11,14 +11,9 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 class PageYamlExtension extends Extension
 {
-    /**
-     * {@inheritdoc}
-     *
-     * @throws \Exception
-     */
     public function load(array $configs, ContainerBuilder $containerBuilder): void
     {
-        $yamlFileLoader = new YamlFileLoader($containerBuilder, new FileLocator(__DIR__.'/../Resources/config'));
-        $yamlFileLoader->load('services.yml');
+        (new YamlFileLoader($containerBuilder, new FileLocator(__DIR__ . '/../Resources/config')))
+            ->load('services.yml');
     }
 }

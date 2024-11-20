@@ -11,7 +11,7 @@
         }
     ],
     "require": {
-        "contao/core-bundle": "^4.9|^5.3",
+        "contao/core-bundle": "^5.0",
         "symfony/twig-bundle": "*"
     },
     "autoload": {
