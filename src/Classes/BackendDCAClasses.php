@@ -23,8 +23,6 @@ class BackendDCAClasses extends Backend
         ?string $attr,
         array|string $ids
     ): string {
-
-
         $container = System::getContainer();
         $twig = $container->get('twig');
 

@@ -64,7 +64,7 @@ class BackendImportController
     }
 
 
-    protected function walk($pageKey, $pageData, Request $request, $pid = 0): void
+    public function walk($pageKey, $pageData, Request $request, $pid = 0): void
     {
         $alias = null;
 
