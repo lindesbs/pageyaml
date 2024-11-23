@@ -2,37 +2,32 @@
     <h2 class="sub_headline">{{ 'pageyaml.settings.title'|trans({}, 'contao_default') }}</h2>
 
     <div class="tl_box">
-        <div class="row">
-            <div class="col-3-sm">
-
+        <div class="grid-container">
+            <div class="grid-item">
                 <h3>{{ 'pageyaml.settings.importtitle'|trans({}, 'contao_default') }}</h3>
-            </div>
-            <div class="col-9">
                 <form class="tl_form" method="post">
 
                     <input type="hidden" name="REQUEST_TOKEN" value="{{ request_token }}">
                     <input type="hidden" name="FORM_ID" value="PAGEYAML_UPLOAD">
 
-                    <table>
+                    <table class="grid-table">
                         <tr>
                             <td>
                                 <label for="pageyaml_files">{{ 'pageyaml.settings.importfile'|trans({}, 'contao_default') }}</label>
                             </td>
                             <td>
-                                <select name="pageyaml_files" id="pageyaml_files">
+                                <select name="pageyaml_files" id="pageyaml_files" class="tl_select">
                                     <option value="">-</option>
-                                    {% for optionKey,optionValue in optionsArray %}
+                                    {% for optionKey, optionValue in optionsArray %}
                                         <option value="{{ optionKey }}">{{ optionValue }}</option>
                                     {% endfor %}
                                 </select>
                             </td>
                         </tr>
                         <tr>
-                            <td>
-                             </td>
+                            <td></td>
                             <td>
                                 <small>{{ 'pageyaml.settings.importfile_description'|trans({}, 'contao_default') }}</small>
-
                             </td>
                         </tr>
                         <tr>
@@ -40,20 +35,47 @@
                                 <label for="additionaljobs">{{ 'pageyaml.settings.addArticle'|trans({}, 'contao_default') }}</label>
                             </td>
                             <td>
-                                <input type="checkbox" id="additionaljobs" name="additionaljobs">{{ 'pageyaml.settings.addArticleCheckbox'|trans({}, 'contao_default') }}</input>
+                                <input type="checkbox" id="additionaljobs"
+                                       name="additionaljobs">{{ 'pageyaml.settings.addArticleCheckbox'|trans({}, 'contao_default') }}</input>
                             </td>
                         </tr>
                     </table>
                     <div class="tl_formbody_submit">
                         <div class="tl_submit_container">
-                    <button type="submit" class="tl_submit" name="importConfig" value="1">
-                        {{ 'pageyaml.settings.importConfiguration'|trans({}, 'contao_default') }}
-                    </button>
-                    </div>
+                            <button type="submit" class="tl_submit" name="importConfig" value="1">
+                                {{ 'pageyaml.settings.importConfiguration'|trans({}, 'contao_default') }}
+                            </button>
+                        </div>
                     </div>
                 </form>
-
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .grid-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+    }
+
+    .grid-item {
+        padding: 16px;
+    }
+
+    .grid-table {
+        border-collapse: collapse; /* Entfernt die Zwischenräume (Border-Gaps) zwischen den Zellen */
+        width: 100%;
+    }
+
+    .grid-table td, .grid-table th {
+        padding: 8px;
+    }
+
+    .tl_submit_container {
+        margin-top:32px;
+        display: flex;
+        justify-content: flex-end;
+    }
+</style>

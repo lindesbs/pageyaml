@@ -1,3 +1,0 @@
-pageyaml:
-  resource: '@PageYamlBundle/Controller'
-  type: annotation

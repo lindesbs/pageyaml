@@ -1,31 +1,29 @@
 <?php
 
+declare(strict_types=1);
+
 namespace lindesbs\pageyaml\Controller;
 
 use Contao\Controller;
+use Contao\CoreBundle\Csrf\ContaoCsrfTokenManager;
 use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\Input;
-use Contao\PageModel;
-use Contao\StringUtil;
 use Contao\System;
-use Doctrine\DBAL\Connection;
-use lindesbs\pageyaml\Service\DCAManage;
+use lindesbs\pageyaml\Classes\DCAManage;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Yaml\Yaml;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 class BackendImportController
 {
 
     public function __construct(
-        private readonly ContaoFramework     $framework,
-        private readonly Connection          $connection,
+        private readonly ContaoFramework     $contaoFramework,
+        private readonly ContaoCsrfTokenManager $contaoCsrfTokenManager,
         private readonly RequestStack        $requestStack,
-        private readonly TranslatorInterface $translator,
-        private readonly DCAManage $DCAManage
+        private readonly DCAManage           $DCAManage,
     ) {
         $GLOBALS['TL_CSS'][] = 'bundles/pageyaml/pageyaml.css|static';
     }
@@ -40,7 +38,7 @@ class BackendImportController
         }
 
         $container = System::getContainer();
-        $this->framework->initialize();
+        $this->contaoFramework->initialize();
         $request = $this->requestStack->getCurrentRequest();
 
         if ($this->handlePOSTData($request)) {
@@ -56,7 +54,7 @@ class BackendImportController
             $strReturn = $twig->render(
                 '@PageYaml\Backend\settings.html.twig',
                 [
-                    'request_token' => REQUEST_TOKEN,
+                    'request_token' => $this->contaoCsrfTokenManager->getDefaultTokenValue(),
                     'optionsArray' => $strFileSelections
                 ]
             );
@@ -66,28 +64,28 @@ class BackendImportController
     }
 
 
-    protected function walk($pageKey, $pageData, Request $request, $pid = 0): void
+    public function walk($pageKey, $pageData, Request $request, $pid = 0): void
     {
         $alias = null;
 
-        if (str_contains($pageKey, "~~")) {
+        if (str_contains(strval($pageKey), "~~")) {
             list($title, $alias) = explode("~~", $pageKey);
         } else {
             $title = $pageKey;
         }
 
-        $objPage = $this->DCAManage->addPage(
-            $title,
+        $pageModel = $this->DCAManage->addPage(
+            strval($title),
             pid: $pid
         );
 
         if ($pid == 0) {
-            $objPage->type = "root";
+            $pageModel->type = "root";
         }
 
         // Ist die Bezeichnung numerisch, wird dies als Errorpage gewertet
         if (is_int($pageKey)) {
-            $objPage->type  = 'error_'.$pageKey;
+            $pageModel->type  = 'error_'.$pageKey;
         }
 
         $nodes = [];
@@ -95,9 +93,9 @@ class BackendImportController
         if (is_array($pageData)) {
             foreach ($pageData as $arrayKey => $arrayValue) {
 
-                if (str_starts_with($arrayKey, '~')) {
+                if (str_starts_with(strval($arrayKey), '~')) {
                     $key = ltrim($arrayKey, '~');
-                    $objPage->$key = $arrayValue;
+                    $pageModel->$key = $arrayValue;
 
                     continue;
                 }
@@ -106,20 +104,20 @@ class BackendImportController
             }
         }
 
-        if (str_starts_with($pageKey, '_')) {
-            $objPage->hide = true;
+        if (str_starts_with(strval($pageKey), '_')) {
+            $pageModel->hide = true;
         }
 
-        $objPage->save();
+        $pageModel->save();
 
         $jobs = $request->get('additionaljobs');
 
-        if (str_contains($jobs, 'on')) {
-            $objArticle = $this->DCAManage->addArticle($objPage);
+        if (($jobs) && (str_contains(strval($jobs), 'on'))) {
+            $this->DCAManage->addArticle($pageModel);
         }
 
         foreach ($nodes as $nodeKey => $nodeValue) {
-            $this->walk($nodeKey, $nodeValue, $request, $objPage->id);
+            $this->walk($nodeKey, $nodeValue, $request, $pageModel->id);
         }
     }
 

@@ -13,7 +13,7 @@ Homepage~~homepage:
   ~language: en
   ~fallback: true
   ~includeLayout: true
-  ~layout: Default
+  ~layout: 1
   Overview:
   Introdution:
   Links:
